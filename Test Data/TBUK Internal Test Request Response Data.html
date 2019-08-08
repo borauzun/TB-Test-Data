@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    div {
+      border-radius: 5px;
+      background-color: #f2f2f2;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!--   1   -->
+  <h3>1. Linking Get Authorization</h3>
+  <b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/linking/authorizations/{accessToken}
+  <br>
+  <b>HTTP GET</b>
+  <h5>Request:</h5>
+  <pre>
+  <code>
+https://openbanking.turkishbank.co.uk:6135/linking/authorizations/eyJhbGciOiJFZERTQSJ9.O21lbWJlcklkPUNURVpFUjEyMzQ7.E4IUNVsk2O01F87MgCRqwX0WQpO9zlCppSSI0FUSbq0h6KGN400uJpAu7liDgXY6er80U41HtvysG1Y-RVTyDQ
+  </code>
+  </pre>
+  <h5>Response:</h5>
+  <pre>
+  <code>
+{
+    "bankId": "TBUK",
+    "sealedMessage": [
+        {
+            "ciphertext": "eyJtZW1iZXJfaWQiOiJDVEVaRVIxMjM0IiwiYWNjb3VudF9uYW1lIjoiR0JQIEN1cnJlbnQgQWNjb3VudCAoNzg4MykiLCJhY2NvdW50Ijp7ImN1c3RvbSI6eyJiYW5rSWQiOiJUQlVLIiwicGF5bG9hZCI6IjA4MzQ3ODgzIn19LCJleHBpcmF0aW9uX21zIjo1MDAwMDB9",
+            "NoopMethod": {}
+        }
+    ]
+}
+    </code>
+    </pre>
+
+    <!--   2   -->
+  <h3>2. Accounts</h3>
+  <b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/accounts
+  <br><b>HTTP POST</b>
+  <h5>Request:</h5>
+  <pre>
+  <code>
+{
+  "accountType": "CUSTOM",
+  "account": {
+    "bankId": "tbuk",
+    "payload": "08347883"
+  }
+}
+  </code>
+  </pre>
+  <h5>Response:</h5>
+  <pre>
+  <code>
+{
+    "accountId": "08347883"
+}
+    </code>
+    </pre>
+
+    <!--   3   -->
+    <h3>3. Transfer </h3>
+    <b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/transfers
+    <br><b>HTTP POST</b>
+    <h5>Request:</h5>
+    <pre>
+    <code>
+    {
+      "transferId": "t:I58bxf:5mXpRAcI",
+      "requestedAmount": {
+        "currency": "USD",
+        "value": "100.00"
+      },
+      "transactionAmount": {
+        "currency": "USD",
+        "value": "100.00"
+      },
+      "source": {
+        "fps": {
+                "sortCode": "405198",
+                "accountNumber": "08347883"
+            }
+      },
+      "destinations": [{
+        "account": {
+          "fps": {
+                "sortCode": "230000",
+                "accountNumber": "12345678"
+            }
+        },
+        "customerData": {
+          "legalNames": ["John Smith"],
+          "address": {
+            "houseNumber": "332C",
+            "street": "Cook St"
+          }
+        }
+      }],
+      "description": "Sample Transfer"
+    }
+    </code>
+    </pre>
+    <h5>Response:</h5>
+    <pre>
+    <code>
+    {
+        "transactionId": "2",
+        "status": "PROCESSING",
+        "statusDescription": "Received by TBUK"
+    }
+      </code>
+      </pre>
+
+      <!--   4  -->
+      <h3>4. Transfer Status</h3>
+      <b>endpoint : </b>/transfers/{transferId}/status
+      <br><b>HTTP GET</b>
+      <h5>Request:</h5>
+      <pre>
+      <code>
+           https://openbanking.turkishbank.co.uk:6135/transfers/t:I58bxf:5mXpRAcI/status
+      </code>
+      </pre>
+      <h5>Response:</h5>
+      <pre>
+      <code>
+      PROCESSING
+        </code>
+        </pre>
+
+
+<!--   5   -->
+<h3>5. Accounts - balance </h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/accounts/{bankAccountId}/balance
+<br><b>HTTP GET</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/accounts/08347883/balance
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+{
+    "current": {
+        "currency": "GBP",
+        "value": "200.00"
+    },
+    "available": {
+        "currency": "GBP",
+        "value": "200.00"
+    },
+    "updatedAt": "2019-08-08T21:17:05.952"
+}
+  </code>
+  </pre>
+
+<!--   6   -->
+<h3>6. Account Transactions</h3>
+<b>endpoint : </b>/accounts/{bankAccountId}/transactions
+<br><b>HTTP GET</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/accounts/08347883/transactions
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+{
+    "offset": "1",
+    "transactions": [
+        {
+            "id": "2",
+            "type": "DEBIT",
+            "status": "SUCCESS",
+            "amount": {
+                "currency": "USD",
+                "value": "100.00"
+            },
+            "description": "Sample Transfer",
+            "tokenId": "1",
+            "tokenTransferId": "t:I58bxf:5mXpRAcI",
+            "createdAt": "2019-08-08T21:19:08.297"
+        }
+    ]
+}
+  </code>
+  </pre>
+
+<!--   7   -->
+<h3>7. Accounts - Transaction Detail</h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/accounts/{bankAccountId}/transactions/{transactionId}
+<br><b>HTTP GET</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/accounts/08347883/transactions/2
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+{
+    "id": "2",
+    "type": "DEBIT",
+    "status": "SUCCESS",
+    "amount": {
+        "currency": "USD",
+        "value": "100.00"
+    },
+    "description": "Sample Transfer",
+    "tokenId": "1",
+    "tokenTransferId": "t:I58bxf:5mXpRAcI",
+    "createdAt": "2019-08-08T21:19:08.297"
+}
+  </code>
+  </pre>
+
+<!--   8  -->
+<h3>8. Account Destinations</h3>
+<b>endpoint : </b> https://openbanking.turkishbank.co.uk:6135/accounts/{bankAccountId}/destinations
+<br><b>HTTP GET</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/accounts/08347883/destinations
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+{
+    "destinations": [
+        {
+            "fps": {
+                "sortCode": "405198",
+                "accountNumber": "08347883"
+            }
+        },
+        {
+            "swift": {
+                "bic": "TUBAGB2L",
+                "accountNumber": "GB95TUBA40519808347883"
+            }
+        }
+    ],
+    "customerData": {
+        "legalNames": [
+            "Test",
+            "User"
+        ],
+        "address": {
+            "houseNumber": "61 T Court",
+            "street": "Trabzon Street",
+            "postCode": "W1 1AA",
+            "city": "London",
+            "country": "UK"
+        }
+    }
+}
+  </code>
+  </pre>
+
+<!--   9   -->
+<h3>9. Account Details</h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/accounts/{bankAccountId}/details
+<br><b>HTTP GET</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/accounts/08347883/details
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+{
+    "identifier": "08347883",
+    "accountType": "CHECKING",
+    "status": "Active"
+}
+  </code>
+  </pre>
+
+<!--   10   -->
+<h3>10. Consent Create</h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/consents/{tokenConsentId}/created
+<br><b>HTTP PUT</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/consents/1/created
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+returns HTTP 200
+      }
+  </code>
+  </pre>
+
+<!--   11   -->
+<h3>11. Consent Revoke</h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/consents/{tokenConsentId}/created
+<br><b>HTTP PUT</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/consents/1/revoked
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+      HTTP 200
+  </code>
+  </pre>
+
+<!--   12   -->
+<h3>12. Notifications - add </h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/notifications
+<br><b>HTTP PUT</b>
+<h5>Request:</h5>
+<pre>
+<code>
+
+{
+  "notificationId": "1",
+  "subscriber": {
+    "subscriberId": "1",
+    "handler": "Token",
+    "handlerInstructions": [
+      {
+        "key": "apns-id",
+        "value": "123e4567-e89b-12d3-a456-42665544000"
+      }
+    ]
+  },
+  "content": {
+    "type": "string",
+    "title": "string",
+    "body": "string",
+    "payload": "string",
+    "locKey": "string",
+    "locArgs": [
+      "string"
+    ],
+    "createdAt": "2019-07-26T20:58:20.394Z"
+  },
+  "status": [
+    null
+  ]
+}
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+returns HTTP 200
+  </code>
+  </pre>
+
+<!--   13  -->
+<h3>13. Notifications - delete</h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/notifications/{notificationId}
+<br><b>HTTP DELETE</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/notifications/1
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+returns HTTP 200
+  </code>
+  </pre>
+
+<!--   14   -->
+<h3>14. Storage Entry</h3>
+<b>endpoint : </b>https://openbanking.turkishbank.co.uk:6135/storage/entries
+<br><b>HTTP PUT</b>
+<h5>Request:</h5>
+<pre>
+<code>
+{
+  "key": "1",
+  "value": "61",
+  "category": "ACCOUNT_INFO"
+}
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+{
+    "previous": "57"
+}
+  </code>
+  </pre>
+
+<!--   15  -->
+<h3>15. Storage - get Entry</h3>
+<br><b>HTTP PUT</b>
+<b>endpoint : </b>/storage/entries/{key}
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/storage/entries/1
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+{
+    "key": "1",
+    "value": "61"
+}
+  </code>
+  </pre>
+
+<!--   16   -->
+<h3>16. Storage delete entry</h3>
+<br><b>HTTP DELETE</b>
+<b>endpoint : </b>/storage/entries/{keyToDelete}
+<h5>Request:</h5>
+<pre>
+<code>
+https://openbanking.turkishbank.co.uk:6135/storage/entries/1
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+returns HTTP 200
+  </code>
+  </pre>
+
+
+
+ <!--   17   -->
+<h3>17. Health</h3>
+<b>endpoint : </b>/health
+<br><b>HTTP GET</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/health
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+returns HTTP 200
+  </code>
+  </pre>
+  <!--   18   -->
+<h3>18. Account - Unlink</h3>
+<b>endpoint : </b>/accounts/{bankAccountId}
+<br><b>HTTP DELETE</b>
+<h5>Request:</h5>
+<pre>
+<code>
+     https://openbanking.turkishbank.co.uk:6135/accounts/08347883
+</code>
+</pre>
+<h5>Response:</h5>
+<pre>
+<code>
+returns HTTP 200
+  </code>
+  </pre>
+
+  <div id="result"></div>
+
+  <script>
+    var getResult2 = function (input) {
+      var output = convertIntentArrayToMarkupArray(intents);
+      document.getElementById('result').innerHTML = JSON.stringify(output);
+    };
+  </script>
+</body>
+
+</html>
